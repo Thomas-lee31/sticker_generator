@@ -1,4 +1,3 @@
-import { tab } from '@testing-library/user-event/dist/tab';
 import React, { useEffect, useState } from 'react';
 import { jsPDF } from "jspdf";
 import "jspdf-barcode";
@@ -24,7 +23,9 @@ const DataTable = () => {
       for (const col of tableData[i].columns) {
         total += Number(col.val3);
       }
-      totalWeights[i] = total;
+      const newTotalWeights = [...totalWeights];
+      newTotalWeights[i] = total;
+      setTotalWeights(newTotalWeights);
     }
     updateBgColor();
   }, [tableData]);
@@ -36,13 +37,19 @@ const DataTable = () => {
     console.log([tableData[0].weight, tableData[1].weight, tableData[2].weight])
     for (let i = 0; i < 3; i++) {
       if(totalWeights[i] > tableData[i].weight){
-        classNames[i] = 'red';
+        const newClassNames = [...classNames];
+        newClassNames[i] = 'red';
+        setClassNames(newClassNames);
       }
       else if(totalWeights[i] == tableData[i].weight){
-        classNames[i] = 'green';
+        const newClassNames = [...classNames];
+        newClassNames[i] = 'green';
+        setClassNames(newClassNames);
       }
       else{
-        classNames[i] = 'white';
+        const newClassNames = [...classNames];
+        newClassNames[i] = 'white';
+        setClassNames(newClassNames);
       }
     }
   }
@@ -209,7 +216,7 @@ const DataTable = () => {
         textOptions: { align: "center" } // optional text options
       });
     });
-    
+
     doc.save("5299A.pdf");
 
     // 5299B
