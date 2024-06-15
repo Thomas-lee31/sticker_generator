@@ -143,6 +143,10 @@ const DataTable = () => {
             break;
           }
         }
+        var dateOjb = new Date(date);
+        dateOjb.setFullYear(dateOjb.getFullYear() + 1);
+        dateOjb.setDate(dateOjb.getDate() - 1);
+        var expDate = dateOjb.getFullYear() + '/' + String(dateOjb.getMonth() + 1).padStart(2, '0') + '/' + String(dateOjb.getDate()).padStart(2, '0');
         doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
         doc.setFontSize(14);
         doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
@@ -162,7 +166,7 @@ const DataTable = () => {
         doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
-        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
         doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[0], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
@@ -202,6 +206,10 @@ const DataTable = () => {
             break;
           }
         }
+        var dateOjb = new Date(date);
+        dateOjb.setMonth(dateOjb.getMonth() + 8);
+        dateOjb.setDate(dateOjb.getDate() - 1);
+        var expDate = dateOjb.getFullYear() + '/' + String(dateOjb.getMonth() + 1).padStart(2, '0') + '/' + String(dateOjb.getDate()).padStart(2, '0');
         doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
         doc.setFontSize(14);
         doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
@@ -221,7 +229,7 @@ const DataTable = () => {
         doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
-        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
         doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[1], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
@@ -260,6 +268,10 @@ const DataTable = () => {
             break;
           }
         }
+        var dateOjb = new Date(date);
+        dateOjb.setMonth(dateOjb.getMonth() + 8);
+        dateOjb.setDate(dateOjb.getDate() - 1);
+        var expDate = dateOjb.getFullYear() + '/' + String(dateOjb.getMonth() + 1).padStart(2, '0') + '/' + String(dateOjb.getDate()).padStart(2, '0');
         doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
         doc.setFontSize(14);
         doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
@@ -279,7 +291,7 @@ const DataTable = () => {
         doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
-        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
         doc.text("8桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[2], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
