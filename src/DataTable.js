@@ -4,55 +4,58 @@ import "jspdf-barcode";
 import "./msjh-normal.js";
 
 const DataTable = () => {
+  const kg2Barrel = [270, 10, 2];
+  const barrel2Box = [2, 2, 8];
+  const box2Pallet = [1, 32, 48];
+  const [barrels, setBarrels] = useState([0, 0, 0]);
+  const [boxes, setBoxes] = useState([0, 0, 0]);
+  const [pallets, setPallets] = useState([0, 0, 0]);
   const rowHeaders = ['906Z', '5299 A', '5299 B'];
 
   const [order, setOrder] = useState('');
 
+  const [weights, setWeights] = useState([0, 0, 0]);
+
   // Initial table data state with three rows and three cells each containing three values
   const [tableData, setTableData] = useState([
-    { weight: 0, columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] },
-    { weight: 0, columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] },
-    { weight: 0, columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] }
+    { columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] },
+    { columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] },
+    { columns: [{ val1: '', val2: '', val3: 0 }, { val1: '', val2: '', val3: 0 }] }
   ]);
 
-  const [totalWeights, setTotalWeights] = useState([0, 0, 0]);
+  const [totalBoxes, setTotalBoxes] = useState([0, 0, 0]);
 
   useEffect(() => {
+    const newTotalBoxes = [0, 0, 0];
     for (let i = 0; i < 3; i++) {
       let total = 0;
       for (const col of tableData[i].columns) {
         total += Number(col.val3);
       }
-      const newTotalWeights = [...totalWeights];
-      newTotalWeights[i] = total;
-      setTotalWeights(newTotalWeights);
+      newTotalBoxes[i] = total;
     }
-    updateBgColor();
+    setTotalBoxes(newTotalBoxes);
   }, [tableData]);
 
   const [classNames, setClassNames] = useState(['white', 'white', 'white']);
 
-  function updateBgColor(){
-    console.log('Total Weights:', totalWeights);
-    console.log([tableData[0].weight, tableData[1].weight, tableData[2].weight])
+  useEffect(() => {
+    console.log('Total Boxes:', totalBoxes);
+    console.log('Boxes:', boxes);
+    const newClassNames = [...classNames];
     for (let i = 0; i < 3; i++) {
-      if(totalWeights[i] > tableData[i].weight){
-        const newClassNames = [...classNames];
+      if(totalBoxes[i] > boxes[i]){
         newClassNames[i] = 'red';
-        setClassNames(newClassNames);
       }
-      else if(totalWeights[i] == tableData[i].weight){
-        const newClassNames = [...classNames];
+      else if(totalBoxes[i] == boxes[i]){
         newClassNames[i] = 'green';
-        setClassNames(newClassNames);
       }
       else{
-        const newClassNames = [...classNames];
         newClassNames[i] = 'white';
-        setClassNames(newClassNames);
       }
     }
-  }
+    setClassNames(newClassNames);
+  }, [totalBoxes, boxes]);
 
   const addColumn = () => {
     setTableData(tableData.map(row => ({ ...row, columns: [...row.columns, { val1: '', val2: '', val3: '' }] })));
@@ -63,16 +66,27 @@ const DataTable = () => {
     setOrder(value);
   };
 
+  const handleWeightsChange = (rowIndex, event) => {
+    const { value } = event.target;
+    const newWeights = [...weights];
+    newWeights[rowIndex] = Number(value);
+    setWeights(newWeights);
+    const newBarrels = [...barrels];
+    newBarrels[rowIndex] = Math.ceil(newWeights[rowIndex] / kg2Barrel[rowIndex]);
+    setBarrels(newBarrels);
+    const newBoxes = [...boxes];
+    newBoxes[rowIndex] = Math.ceil(newBarrels[rowIndex] / barrel2Box[rowIndex]);
+    setBoxes(newBoxes);
+    const newPallets = [...pallets];
+    newPallets[rowIndex] = Math.ceil(newBoxes[rowIndex] / box2Pallet[rowIndex]);
+    setPallets(newPallets);
+  };
+
   // Handle input change
   const handleInputChange = (rowIndex, colName, colIndex, valueIndex, event) => {
     const { value } = event.target;
     const newTableData = [...tableData];
-    if(colName === 'weight'){
-      newTableData[rowIndex].weight = Number(value);
-    }
-    else{
-      newTableData[rowIndex][colName][colIndex][valueIndex] = value;
-    }
+    newTableData[rowIndex][colName][colIndex][valueIndex] = value;
     setTableData(newTableData);
   };
 
@@ -89,21 +103,10 @@ const DataTable = () => {
     return String.fromCharCode(checksum);
   }
 
-  function encodeToCode128(text, codeABC = "B") {
-    var startCode = String.fromCharCode(codeABC.toUpperCase().charCodeAt() + 138);
-    var stop = String.fromCharCode(206);
-    
-    var check = checkSum128(text, startCode.charCodeAt(0) - 100);
-  
-    text = text.replace(" ", String.fromCharCode(194));
-  
-    return startCode + text + check + stop;
-  }
-
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    const doc = new jsPDF('portrait', 'in', 'a4');
+    var doc = new jsPDF('portrait', 'in', 'a4');
     doc.setFont("msjh");
     doc.setLineWidth(0.005);
     const stickerHeight = 3.4; // inches
@@ -121,108 +124,178 @@ const DataTable = () => {
     ];
 
     const base = 0.26;
-    const offset = 0.23;
-
-    positions.forEach(pos => {
-      doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
-      doc.setFontSize(14);
-      doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
-      doc.setFontSize(12);
-      doc.text("產品名稱：", pos.x + stickerWidth / 4, pos.y + base + offset, 'right');
-      doc.text("料號：", pos.x + stickerWidth / 4, pos.y + base + offset * 3, 'right');
-      doc.text("訂單號碼：", pos.x + stickerWidth / 4, pos.y + base + offset * 4, 'right');
-      doc.text("Lot No：", pos.x + stickerWidth / 4, pos.y + base + offset * 5, 'right');
-      doc.text("製造日期：", pos.x + stickerWidth / 4, pos.y + base + offset * 8, 'right');
-      doc.text("保存期限：", pos.x + stickerWidth / 4, pos.y + base + offset * 9, 'right');
-      doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
-      doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
-      
-      doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
-      doc.text("HuiTian 5299WS-A,10kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
-      doc.text("MMNPBHUT5299WSAB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
-      doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
-      doc.text(tableData[0]['columns'][0].val1, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
-      doc.text("2024/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
-      doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
-      doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
-      doc.text("1/14", pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
-    });
-
-    positions.forEach(pos => {
-      doc.barcode('23092614-Z-120 SGZ', {
-        fontSize: 26,
-        textColor: "#000000",
-        x: pos.x + stickerWidth / 2,
-        y: pos.y + base + offset * 7,
-        textOptions: { align: "center" } // optional text options
-      });
-    });
-    doc.addPage();
+    const offset = 0.26;
 
     // 906Z
-    // var i = 1;
-    // for(const col of tableData[0].columns){
-    //   //const barcode = encodeToCode128(col.val1);
-    //   //doc.barcode(barcode, 50, 50);
-    //   doc.barcode(col.val1, {
-    //     fontSize: 50,
-    //     textColor: "#000000",
-    //     x: 2 * i,
-    //     y: 2,
-    //     textOptions: { align: "center" } // optional text options
-    //   })
-    //   doc.setFont("Courier"); // reset font to your font
-    //   i++;
-    // }
-
-    doc.save("906Z.pdf");
+    for(let i = 0; i < Math.ceil(boxes[0] / 6); i++){
+      var j = 1;
+      for(const pos of positions){
+        var number = i * 6 + j;
+        if(number > boxes[0]) break;
+        var sum = 0;
+        var lotNo = '';
+        var date = '';
+        for(const col of tableData[0].columns){
+          sum += Number(col.val3);
+          lotNo = col.val1;
+          date = col.val2;
+          if(sum >= number){
+            break;
+          }
+        }
+        doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
+        doc.setFontSize(14);
+        doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
+        doc.setFontSize(12);
+        doc.text("產品名稱：", pos.x + stickerWidth / 4, pos.y + base + offset, 'right');
+        doc.text("料號：", pos.x + stickerWidth / 4, pos.y + base + offset * 3, 'right');
+        doc.text("訂單號碼：", pos.x + stickerWidth / 4, pos.y + base + offset * 4, 'right');
+        doc.text("Lot No：", pos.x + stickerWidth / 4, pos.y + base + offset * 5, 'right');
+        doc.text("製造日期：", pos.x + stickerWidth / 4, pos.y + base + offset * 8, 'right');
+        doc.text("保存期限：", pos.x + stickerWidth / 4, pos.y + base + offset * 9, 'right');
+        doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
+        doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
+        
+        doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
+        doc.text("Huitian 906Z,270kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
+        doc.text("MMNPFHUTHT906ZWB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
+        doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
+        doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
+        doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
+        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(number + "/" + boxes[0], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
+        
+        doc.barcode(lotNo, {
+          fontSize: 34,
+          textColor: "#000000",
+          x: pos.x + stickerWidth / 2,
+          y: pos.y + base + offset * 7,
+          textOptions: { align: "center" } // optional text options
+        });
+        doc.setFont("msjh");
+        j++;
+      }
+      doc.addPage();
+    }
+    
+    //doc.save("906Z.pdf");
 
     // 5299A
     doc = new jsPDF('portrait', 'in', 'a4');
     doc.setFont("msjh");
     doc.setLineWidth(0.005);
 
-    positions.forEach(pos => {
-      doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
-      doc.setFontSize(14);
-      doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
-      doc.setFontSize(12);
-      doc.text("產品名稱：", pos.x + stickerWidth / 4, pos.y + base + offset, 'right');
-      doc.text("料號：", pos.x + stickerWidth / 4, pos.y + base + offset * 3, 'right');
-      doc.text("訂單號碼：", pos.x + stickerWidth / 4, pos.y + base + offset * 4, 'right');
-      doc.text("Lot No：", pos.x + stickerWidth / 4, pos.y + base + offset * 5, 'right');
-      doc.text("製造日期：", pos.x + stickerWidth / 4, pos.y + base + offset * 8, 'right');
-      doc.text("保存期限：", pos.x + stickerWidth / 4, pos.y + base + offset * 9, 'right');
-      doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
-      doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
-      
-      doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
-      doc.text("HuiTian 5299WS-A,10kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
-      doc.text("MMNPBHUT5299WSAB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
-      doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
-      doc.text(tableData[0]['columns'][0].val1, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
-      doc.text("2024/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
-      doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
-      doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
-      doc.text("1/14", pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
-    });
-
-    positions.forEach(pos => {
-      doc.barcode('23092614-Z-120 SGZ', {
-        fontSize: 26,
-        textColor: "#000000",
-        x: pos.x + stickerWidth / 2,
-        y: pos.y + base + offset * 7,
-        textOptions: { align: "center" } // optional text options
-      });
-    });
-
-    doc.save("5299A.pdf");
+    for(let i = 0; i < Math.ceil(boxes[1] / 6); i++){
+      var j = 1;
+      for(const pos of positions){
+        var number = i * 6 + j;
+        if(number > boxes[1]) break;
+        var sum = 0;
+        var lotNo = '';
+        var date = '';
+        for(const col of tableData[1].columns){
+          sum += Number(col.val3);
+          lotNo = col.val1;
+          date = col.val2;
+          if(sum >= number){
+            break;
+          }
+        }
+        doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
+        doc.setFontSize(14);
+        doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
+        doc.setFontSize(12);
+        doc.text("產品名稱：", pos.x + stickerWidth / 4, pos.y + base + offset, 'right');
+        doc.text("料號：", pos.x + stickerWidth / 4, pos.y + base + offset * 3, 'right');
+        doc.text("訂單號碼：", pos.x + stickerWidth / 4, pos.y + base + offset * 4, 'right');
+        doc.text("Lot No：", pos.x + stickerWidth / 4, pos.y + base + offset * 5, 'right');
+        doc.text("製造日期：", pos.x + stickerWidth / 4, pos.y + base + offset * 8, 'right');
+        doc.text("保存期限：", pos.x + stickerWidth / 4, pos.y + base + offset * 9, 'right');
+        doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
+        doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
+        
+        doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
+        doc.text("HuiTian 5299WS-A,10kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
+        doc.text("MMNPBHUT5299WSAB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
+        doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
+        doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
+        doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
+        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(number + "/" + boxes[1], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
+        
+        doc.barcode(lotNo, {
+          fontSize: 34,
+          textColor: "#000000",
+          x: pos.x + stickerWidth / 2,
+          y: pos.y + base + offset * 7,
+          textOptions: { align: "center" } // optional text options
+        });
+        doc.setFont("msjh");
+        j++;
+      }
+      doc.addPage();
+    }
+    //doc.save("5299A.pdf");
 
     // 5299B
     doc = new jsPDF('portrait', 'in', 'a4');
     doc.setFont("msjh");
     doc.setLineWidth(0.005);
+
+    for(let i = 0; i < Math.ceil(boxes[2] / 6); i++){
+      var j = 1;
+      for(const pos of positions){
+        var number = i * 6 + j;
+        if(number > boxes[2]) break;
+        var sum = 0;
+        var lotNo = '';
+        var date = '';
+        for(const col of tableData[2].columns){
+          sum += Number(col.val3);
+          lotNo = col.val1;
+          date = col.val2;
+          if(sum >= number){
+            break;
+          }
+        }
+        doc.rect(pos.x, pos.y, stickerWidth, stickerHeight);
+        doc.setFontSize(14);
+        doc.text("鑫諾發股份有限公司", pos.x + stickerWidth / 2, pos.y + base, 'center');
+        doc.setFontSize(12);
+        doc.text("產品名稱：", pos.x + stickerWidth / 4, pos.y + base + offset, 'right');
+        doc.text("料號：", pos.x + stickerWidth / 4, pos.y + base + offset * 3, 'right');
+        doc.text("訂單號碼：", pos.x + stickerWidth / 4, pos.y + base + offset * 4, 'right');
+        doc.text("Lot No：", pos.x + stickerWidth / 4, pos.y + base + offset * 5, 'right');
+        doc.text("製造日期：", pos.x + stickerWidth / 4, pos.y + base + offset * 8, 'right');
+        doc.text("保存期限：", pos.x + stickerWidth / 4, pos.y + base + offset * 9, 'right');
+        doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
+        doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
+        
+        doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
+        doc.text("HuiTian 5299WS-B,2kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
+        doc.text("MMNPBHUT5299WSBB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
+        doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
+        doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
+        doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
+        doc.text("2025/05/05", pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
+        doc.text("8桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(number + "/" + boxes[2], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
+        
+        doc.barcode(lotNo, {
+          fontSize: 34,
+          textColor: "#000000",
+          x: pos.x + stickerWidth / 2,
+          y: pos.y + base + offset * 7,
+          textOptions: { align: "center" } // optional text options
+        });
+        doc.setFont("msjh");
+        j++;
+      }
+      doc.addPage();
+    }
+
     doc.save("5299B.pdf");
 
     console.log('Submitted Table Data:', tableData, 'Order:', order);
@@ -231,6 +304,7 @@ const DataTable = () => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
+        <h1>{}</h1>
         <label>
           元晶訂單號&nbsp;
         </label>
@@ -242,6 +316,9 @@ const DataTable = () => {
           <tr>
             <th></th>
             <th>重量</th>
+            <th>桶數&nbsp;&nbsp;&nbsp;</th>
+            <th>箱數&nbsp;&nbsp;&nbsp;</th>
+            <th>托數&nbsp;&nbsp;&nbsp;</th>
             {tableData[0].columns.map((_, colIndex) => (
               <th key={colIndex}>{colIndex + 1}</th>
             ))}
@@ -253,10 +330,13 @@ const DataTable = () => {
               <th>{rowHeaders[rowIndex]}</th>
               <input
                 type="number"
-                value={row.weight}
-                onChange={(event) => handleInputChange(rowIndex, 'weight', 0, '', event)}
+                value={weights[rowIndex]}
+                onChange={(event) => handleWeightsChange(rowIndex, event)}
                 placeholder="重量"
               />
+              <td>{barrels[rowIndex]}</td>
+              <td>{boxes[rowIndex]}</td>
+              <td>{pallets[rowIndex]}</td>
               {row.columns.map((col, colIndex) => (
                 <td key={'col' + colIndex}>
                   
@@ -264,7 +344,7 @@ const DataTable = () => {
                       type="text"
                       value={col.val1}
                       onChange={(event) => handleInputChange(rowIndex, 'columns', colIndex, 'val1', event)}
-                      placeholder="Value 1"
+                      placeholder="Lot No"
                     /><br/>
                     <input
                       type="text"
@@ -284,7 +364,7 @@ const DataTable = () => {
           ))}
         </tbody>
       </table>
-      <button onClick={addColumn}>Add Column</button>
+      <button type="button" onClick={addColumn}>Add Column</button>
       <button type="submit">Submit</button>
     </form>
   );
