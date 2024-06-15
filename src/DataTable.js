@@ -156,7 +156,7 @@ const DataTable = () => {
         doc.text("數量：", pos.x + stickerWidth / 4, pos.y + base + offset * 10, 'right');
         doc.text("箱號：", pos.x + stickerWidth / 4, pos.y + base + offset * 11, 'right');
         
-        doc.text("接線盒灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
+        doc.text("鋁框灌封矽膠", pos.x + stickerWidth * 0.6, pos.y + base + offset, 'center');
         doc.text("Huitian 906Z,270kg", pos.x + stickerWidth * 0.6, pos.y + base + offset * 2, 'center');
         doc.text("MMNPFHUTHT906ZWB-002", pos.x + stickerWidth * 0.6, pos.y + base + offset * 3, 'center');
         doc.text(order, pos.x + stickerWidth * 0.6, pos.y + base + offset * 4, 'center');
@@ -179,7 +179,7 @@ const DataTable = () => {
       doc.addPage();
     }
     
-    //doc.save("906Z.pdf");
+    doc.save("906Z.pdf");
 
     // 5299A
     doc = new jsPDF('portrait', 'in', 'a4');
@@ -237,7 +237,7 @@ const DataTable = () => {
       }
       doc.addPage();
     }
-    //doc.save("5299A.pdf");
+    doc.save("5299A.pdf");
 
     // 5299B
     doc = new jsPDF('portrait', 'in', 'a4');
@@ -350,7 +350,7 @@ const DataTable = () => {
                       type="text"
                       value={col.val2}
                       onChange={(event) => handleInputChange(rowIndex, 'columns', colIndex, 'val2', event)}
-                      placeholder="生產日期"
+                      placeholder="生產日期 (yyyy/mm/dd)"
                     /><br/>
                     <input
                       type="number"
