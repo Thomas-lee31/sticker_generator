@@ -384,6 +384,13 @@ const DataTable = () => {
               ))}
             </tr>
           ))}
+          <tr class="white">
+            <th>合計</th>
+            <td>{weights.reduce((a, b) => a + b, 0)}</td>
+            <td>{barrels.reduce((a, b) => a + b, 0)}</td>
+            <td>{boxes.reduce((a, b) => a + b, 0)}</td>
+            <td>{pallets.reduce((a, b) => a + b, 0)}</td>
+          </tr>
         </tbody>
       </table>
       <button type="button" onClick={addColumn}>Add Column</button>
