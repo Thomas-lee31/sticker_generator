@@ -106,6 +106,10 @@ const DataTable = () => {
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
+    if(totalBoxes != boxes){
+      alert('Error');
+      return;
+    }
     var doc = new jsPDF('portrait', 'in', 'a4');
     doc.setFont("msjh");
     doc.setLineWidth(0.005);
