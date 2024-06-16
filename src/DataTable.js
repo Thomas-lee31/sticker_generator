@@ -106,7 +106,7 @@ const DataTable = () => {
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    if(totalBoxes != boxes){
+    if(totalBoxes[0] != boxes[0] || totalBoxes[1] != boxes[1] || totalBoxes[2] != boxes[2]){
       alert('Error');
       return;
     }
@@ -135,6 +135,8 @@ const DataTable = () => {
       var j = 1;
       for(const pos of positions){
         var number = i * 6 + j;
+        var numBarrels = 2;
+        if(barrels[0] % 2 == 1 && number == boxes[0]) numBarrels = barrels[0] % 2;
         if(number > boxes[0]) break;
         var sum = 0;
         var lotNo = '';
@@ -171,7 +173,7 @@ const DataTable = () => {
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
         doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
-        doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(numBarrels + "桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[0], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
         doc.barcode(lotNo, {
@@ -198,6 +200,8 @@ const DataTable = () => {
       var j = 1;
       for(const pos of positions){
         var number = i * 6 + j;
+        var numBarrels = 2;
+        if(barrels[1] % 2 != 0 && number == boxes[1]) numBarrels = barrels[1] % 2;
         if(number > boxes[1]) break;
         var sum = 0;
         var lotNo = '';
@@ -234,7 +238,7 @@ const DataTable = () => {
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
         doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
-        doc.text("2桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(numBarrels + "桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[1], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
         doc.barcode(lotNo, {
@@ -260,6 +264,8 @@ const DataTable = () => {
       var j = 1;
       for(const pos of positions){
         var number = i * 6 + j;
+        var numBarrels = 8;
+        if(barrels[2] % 8 != 0 && number == boxes[2]) numBarrels = barrels[2] % 8;
         if(number > boxes[2]) break;
         var sum = 0;
         var lotNo = '';
@@ -296,7 +302,7 @@ const DataTable = () => {
         doc.text(lotNo, pos.x + stickerWidth * 0.6, pos.y + base + offset * 5, 'center');
         doc.text(date, pos.x + stickerWidth * 0.6, pos.y + base + offset * 8, 'center');
         doc.text(expDate, pos.x + stickerWidth * 0.6, pos.y + base + offset * 9, 'center');
-        doc.text("8桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
+        doc.text(numBarrels + "桶", pos.x + stickerWidth * 0.6, pos.y + base + offset * 10, 'center');
         doc.text(number + "/" + boxes[2], pos.x + stickerWidth * 0.6, pos.y + base + offset * 11, 'center');
         
         doc.barcode(lotNo, {
