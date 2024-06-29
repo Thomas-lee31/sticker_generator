@@ -113,21 +113,21 @@ const DataTable = () => {
     var doc = new jsPDF('portrait', 'in', 'a4');
     doc.setFont("msjh");
     doc.setLineWidth(0.005);
-    const stickerHeight = 3.4; // inches
+    const stickerHeight = 3.9; // inches
     const stickerWidth = 3.6; // inches
     const marginLeft = 0.5; // inches
     const marginTop = 0.5; // inches
 
     const positions = [
-      { x: marginLeft, y: marginTop },
-      { x: marginLeft + stickerWidth, y: marginTop },
-      { x: marginLeft, y: marginTop + stickerHeight },
-      { x: marginLeft + stickerWidth, y: marginTop + stickerHeight },
-      { x: marginLeft, y: marginTop + 2 * stickerHeight },
-      { x: marginLeft + stickerWidth, y: marginTop + 2 * stickerHeight }
+      { x: marginLeft, y: 0 },
+      { x: marginLeft + stickerWidth, y: 0 },
+      { x: marginLeft, y: stickerHeight },
+      { x: marginLeft + stickerWidth, y: stickerHeight },
+      { x: marginLeft, y: 2 * stickerHeight },
+      { x: marginLeft + stickerWidth, y: 2 * stickerHeight }
     ];
 
-    const base = 0.26;
+    const base = 0.4;
     const offset = 0.26;
 
     // 906Z
