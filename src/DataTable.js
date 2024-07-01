@@ -115,7 +115,7 @@ const DataTable = () => {
     doc.setLineWidth(0.005);
     const stickerHeight = 3.9; // inches
     const stickerWidth = 3.6; // inches
-    const marginLeft = 0.5; // inches
+    const marginLeft = 0.61; // inches
     const marginTop = 0.5; // inches
 
     const positions = [
