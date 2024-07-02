@@ -87,6 +87,14 @@ const DataTable = () => {
     const { value } = event.target;
     const newTableData = [...tableData];
     newTableData[rowIndex][colName][colIndex][valueIndex] = value;
+
+    if (valueIndex === 'val1') {
+      // Extract the date from the lot number
+      const lotDate = value.substring(0, 6);
+      const formattedDate = `20${lotDate.substring(0, 2)}/${lotDate.substring(2, 4)}/${lotDate.substring(4, 6)}`;
+      newTableData[rowIndex][colName][colIndex]['val2'] = formattedDate;
+    }
+
     setTableData(newTableData);
   };
 
@@ -373,6 +381,7 @@ const DataTable = () => {
                       value={col.val2}
                       onChange={(event) => handleInputChange(rowIndex, 'columns', colIndex, 'val2', event)}
                       placeholder="生產日期 (yyyy/mm/dd)"
+                      disabled
                     /><br/>
                     <input
                       type="number"
