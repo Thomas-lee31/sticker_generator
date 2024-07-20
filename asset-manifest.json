@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/sticker-generator/static/css/main.d58bc74f.css",
+    "main.js": "/sticker-generator/static/js/main.54f259ab.js",
+    "static/js/239.f5317964.chunk.js": "/sticker-generator/static/js/239.f5317964.chunk.js",
+    "static/js/213.c02a6a52.chunk.js": "/sticker-generator/static/js/213.c02a6a52.chunk.js",
+    "static/js/732.4ee324ce.chunk.js": "/sticker-generator/static/js/732.4ee324ce.chunk.js",
+    "static/js/453.6da145ae.chunk.js": "/sticker-generator/static/js/453.6da145ae.chunk.js",
+    "index.html": "/sticker-generator/index.html",
+    "main.d58bc74f.css.map": "/sticker-generator/static/css/main.d58bc74f.css.map",
+    "main.54f259ab.js.map": "/sticker-generator/static/js/main.54f259ab.js.map",
+    "239.f5317964.chunk.js.map": "/sticker-generator/static/js/239.f5317964.chunk.js.map",
+    "213.c02a6a52.chunk.js.map": "/sticker-generator/static/js/213.c02a6a52.chunk.js.map",
+    "732.4ee324ce.chunk.js.map": "/sticker-generator/static/js/732.4ee324ce.chunk.js.map",
+    "453.6da145ae.chunk.js.map": "/sticker-generator/static/js/453.6da145ae.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d58bc74f.css",
+    "static/js/main.54f259ab.js"
+  ]
+}
