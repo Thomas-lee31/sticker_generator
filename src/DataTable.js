@@ -194,7 +194,8 @@ const DataTable = () => {
         doc.setFont("msjh");
         j++;
       }
-      doc.addPage();
+      if(i < Math.ceil(boxes[0] / 6) - 1)
+        doc.addPage();
     }
     
     doc.save("906Z.pdf");
@@ -259,7 +260,8 @@ const DataTable = () => {
         doc.setFont("msjh");
         j++;
       }
-      doc.addPage();
+      if(i < Math.ceil(boxes[1] / 6) - 1)
+        doc.addPage();
     }
     doc.save("5299A.pdf");
 
@@ -323,7 +325,8 @@ const DataTable = () => {
         doc.setFont("msjh");
         j++;
       }
-      doc.addPage();
+      if(i < Math.ceil(boxes[2] / 6) - 1)
+        doc.addPage();
     }
 
     doc.save("5299B.pdf");
